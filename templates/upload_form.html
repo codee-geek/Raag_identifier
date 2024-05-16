@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+</head>
+<body>
+    <h2>Upload a File</h2>
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".wav">
+        <button type="submit">Upload</button>
+    </form>
+
+    <h2>Notes Detected:</h2>
+    <ul>
+        {% for note in notes %}
+            <li>{{ note }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Waveform Plot:</h2>
+    <img src="{{ waveform_plot }}" alt="Waveform Plot">
+</body>
+</html>
