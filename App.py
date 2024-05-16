@@ -8,6 +8,15 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+MAX_FILES = 4
+
+def delete_old_files():
+    files = os.listdir(app.config['UPLOAD_FOLDER'])
+    if len(files) > MAX_FILES:
+        # Sort files by creation time and delete the oldest ones
+        files = sorted(files, key=lambda x: os.path.getctime(os.path.join(app.config['UPLOAD_FOLDER'], x)))
+        for file in files[:-MAX_FILES]:
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], file))
 
 @app.route('/', methods=['GET', 'POST'])
 def get_file():
@@ -21,16 +30,18 @@ def get_file():
             filename = 'f{}.wav'.format(len(os.listdir(app.config['UPLOAD_FOLDER'])) + 1)  # Unique filename
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
-    
+
+            # Delete old files if necessary
+            delete_old_files()
+
             # Process the uploaded file
             notes, waveform_plot_path = process_audio(file_path)
             
             # Render the template with the updated data
             return render_template('upload_form.html', notes=notes, waveform_plot=waveform_plot_path)
 
-    # If GET request or if there's an error with the POq21ST request, render the upload form
+    # If GET request or if there's an error with the POST request, render the upload form
     return render_template('upload_form.html', notes=[], waveform_plot=None)
-
 def process_audio(file_path):
     sample_rate, waveform = wavfile.read(file_path)
     window_size = 1024
