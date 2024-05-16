@@ -19,7 +19,7 @@ def delete_old_files():
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], file))
 
 @app.route('/', methods=['GET', 'POST'])
-def get_file():
+def get_files():
     if request.method == 'POST':
         if 'file' not in request.files:
             return 'No file part'
